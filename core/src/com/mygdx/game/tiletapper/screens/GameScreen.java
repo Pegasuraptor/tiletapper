@@ -2,18 +2,23 @@ package com.mygdx.game.tiletapper.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.tiletapper.TileTapper;
 import com.mygdx.game.tiletapper.tiles.TileGroup;
 
 public class GameScreen implements Screen {
 	final TileTapper game;
-	
 	private OrthographicCamera camera;
-	
 	private TileGroup tiles;
+	
+	public int score = 0;
+	public int lives = 3;
+	
+	private BitmapFont font;
 		
 	public GameScreen(final TileTapper g)
 	{
@@ -21,9 +26,10 @@ public class GameScreen implements Screen {
 		camera= new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
-		game.setNumTiles(5);
-		
-		tiles = new TileGroup(game);
+		font = new BitmapFont(true);
+		font.setColor(Color.WHITE);
+	
+		tiles = new TileGroup(game, 4);
 	}
 
 	@Override
@@ -40,16 +46,24 @@ public class GameScreen implements Screen {
 		camera.update();
 		game.batch.setProjectionMatrix(camera.combined);
 		
-		if(Gdx.input.isTouched())
+		if(Gdx.input.justTouched())
 		{
 			Vector3 touchPos = new Vector3();
 			touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(touchPos);
-			tiles.isTouched(touchPos.x, touchPos.y);
+			if(tiles.isTouched(touchPos.x, touchPos.y))
+			{
+				score += 10;
+			}
+			else
+			{
+				lives -= 1;
+			}
 		}
 		
 		game.batch.begin();
 		tiles.render();
+		font.draw(game.batch, "Score: " + score + "     Lives: " + lives, 0, Gdx.graphics.getHeight() - font.getLineHeight());
 		game.batch.end();
 	}
 
