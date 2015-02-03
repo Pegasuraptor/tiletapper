@@ -1,7 +1,6 @@
 package com.mygdx.game.tiletapper;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.tiletapper.screens.GameScreen;
 

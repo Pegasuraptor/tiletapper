@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.tiletapper.TileTapper;
+import com.mygdx.game.tiletapper.misc.Enums.TouchType;
 
 public class TileGroup {
 	private int numTiles;
@@ -32,7 +33,7 @@ public class TileGroup {
 		rand = new Random();
 		tiles = new Array<Tile>(getSquareNumTiles());
 		tileSize = (float)(Gdx.graphics.getWidth()/getNumTiles());
-		indicatorTile = new Tile(img, (Gdx.graphics.getWidth() / 2) - (tileSize/2), Gdx.graphics.getHeight() - tileSize - 30, tileSize, tileSize);
+		indicatorTile = new Tile(img, (Gdx.graphics.getWidth() / 2) - (tileSize/2), Gdx.graphics.getHeight() - tileSize - (50 * Gdx.graphics.getDensity()), tileSize, tileSize);
 		for(int i = 0; i < getNumTiles(); ++i)
 		{
 			for(int j = 0; j < getNumTiles(); ++j)
@@ -55,18 +56,22 @@ public class TileGroup {
 		game.batch.draw(indicatorTile.getSquare(), indicatorTile.getxPos(), indicatorTile.getyPos(), indicatorTile.getWidth(), indicatorTile.getHeight());
 	}
 	
-	public boolean isTouched(float x, float y)
+	public TouchType isTouched(float x, float y)
 	{
 		for(Tile tile: tiles)
 		{
 			if(tile.isTouched(x, y) && (tile.getColour() == currentColour))
 			{
 				makeRandom();
-				return true;
+				return TouchType.RIGHT;
+			}
+			else if(tile.isTouched(x, y) && (tile.getColour() != currentColour))
+			{
+				return TouchType.WRONG;
 			}
 		}
 		
-		return false;
+		return TouchType.OOB;
 	}
 	
 	public void makeRandom() {
