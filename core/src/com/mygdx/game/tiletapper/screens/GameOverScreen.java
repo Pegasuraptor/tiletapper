@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.tiletapper.TileTapper;
 import com.mygdx.game.tiletapper.misc.Enums.Difficulty;
@@ -44,7 +46,8 @@ public class GameOverScreen implements Screen {
 		game.batch.setProjectionMatrix(camera.combined);
 		
 		game.batch.begin();
-		font.draw(game.batch, "Game Over!", (Gdx.graphics.getWidth() - font.getBounds("Tap to Retry").width) / 2, (Gdx.graphics.getHeight() - font.getLineHeight())/ 2);
+		font.draw(game.batch, "Game Over!", (Gdx.graphics.getWidth() - font.getBounds("Game Over!").width) / 2, (Gdx.graphics.getHeight() - font.getLineHeight())/ 2);
+		font.draw(game.batch, "Tap to Retry", (Gdx.graphics.getWidth() - font.getBounds("Tap to Retry").width) / 2, (Gdx.graphics.getHeight())/ 2);
 		game.batch.end();
 		
 		if(Gdx.input.justTouched())

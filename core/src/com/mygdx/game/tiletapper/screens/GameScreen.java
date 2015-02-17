@@ -21,7 +21,7 @@ public class GameScreen implements Screen {
 	public int score = 0;
 	public int lives = 3;
 	
-	Difficulty currentDifficulty = Difficulty.NORMAL;
+	Difficulty currentDifficulty = Difficulty.EASY;
 	
 	private float timeToTouch;
 	private BitmapFont font;
@@ -54,7 +54,7 @@ public class GameScreen implements Screen {
 		camera.update();
 		game.batch.setProjectionMatrix(camera.combined);
 		
-		timeToTouch -= delta;
+		//timeToTouch -= delta;
 		
 		//Stops little graphical glitch where time is a - number.
 		if(timeToTouch <= 0.0f)

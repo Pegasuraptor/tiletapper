@@ -7,8 +7,8 @@ public class Enums {
 	
 	public enum Difficulty {
 		EASY (3, 3f),
-		NORMAL (4, 1.5f),
-		HARD (5, 0.75f);
+		NORMAL (4, 2.0f),
+		HARD (5, 1.5f);
 		
 		private final int tiles;
 		private final float time; 
