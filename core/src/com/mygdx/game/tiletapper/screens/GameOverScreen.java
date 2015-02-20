@@ -28,7 +28,7 @@ public class GameOverScreen implements Screen {
 		
 		font = new BitmapFont(true);
 		font.setColor(Color.WHITE);
-		font.setScale(Gdx.graphics.getDensity());
+		//font.setScale(Gdx.graphics.getDensity());
 	}
 
 	@Override

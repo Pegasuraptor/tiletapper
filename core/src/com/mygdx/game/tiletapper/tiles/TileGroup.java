@@ -33,7 +33,7 @@ public class TileGroup {
 		rand = new Random();
 		tiles = new Array<Tile>(getSquareNumTiles());
 		tileSize = (float)(Gdx.graphics.getWidth()/getNumTiles());
-		indicatorTile = new Tile(img, (Gdx.graphics.getWidth() / 2) - (tileSize/2), Gdx.graphics.getHeight() - tileSize - (50 * Gdx.graphics.getDensity()), tileSize, tileSize);
+		indicatorTile = new Tile(img, (Gdx.graphics.getWidth() / 2) - (tileSize/2), Gdx.graphics.getHeight() - (tileSize * 1.5f), tileSize, tileSize);
 		for(int i = 0; i < getNumTiles(); ++i)
 		{
 			for(int j = 0; j < getNumTiles(); ++j)

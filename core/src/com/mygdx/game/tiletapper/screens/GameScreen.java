@@ -5,12 +5,15 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.tiletapper.TileTapper;
 import com.mygdx.game.tiletapper.misc.Enums.Difficulty;
 import com.mygdx.game.tiletapper.misc.Enums.TouchType;
+import com.mygdx.game.tiletapper.misc.GameStats;
 import com.mygdx.game.tiletapper.tiles.TileGroup;
 
 public class GameScreen implements Screen {
@@ -18,13 +21,8 @@ public class GameScreen implements Screen {
 	private OrthographicCamera camera;
 	private TileGroup tiles;
 	
-	public int score = 0;
-	public int lives = 3;
-	
-	Difficulty currentDifficulty = Difficulty.EASY;
-	
-	private float timeToTouch;
 	private BitmapFont font;
+	private TextureRegion lowerPanelTex;
 		
 	public GameScreen(final TileTapper g)
 	{
@@ -34,10 +32,16 @@ public class GameScreen implements Screen {
 		
 		font = new BitmapFont(true);
 		font.setColor(Color.WHITE);
-		font.setScale(Gdx.graphics.getDensity());
-	
-		timeToTouch = currentDifficulty.time();
-		tiles = new TileGroup(game, currentDifficulty.tiles());
+		//font.setScale(Gdx.graphics.getDensity());
+		
+		lowerPanelTex = new TextureRegion(new Texture("lowerpanel.png"));
+		lowerPanelTex.flip(false, true);
+		
+		GameStats.lives = 3;
+		GameStats.score = 0;
+		GameStats.currentDifficulty = Difficulty.EASY;
+		GameStats.timeToTouch = GameStats.currentDifficulty.time();
+		tiles = new TileGroup(game, GameStats.currentDifficulty.tiles());
 	}
 
 	@Override
@@ -57,8 +61,8 @@ public class GameScreen implements Screen {
 		//timeToTouch -= delta;
 		
 		//Stops little graphical glitch where time is a - number.
-		if(timeToTouch <= 0.0f)
-			timeToTouch = 0.0f;
+		if(GameStats.timeToTouch <= 0.0f)
+			GameStats.timeToTouch = 0.0f;
 		
 		if(Gdx.input.justTouched())
 		{
@@ -68,25 +72,27 @@ public class GameScreen implements Screen {
 			TouchType result = tiles.isTouched(touchPos.x, touchPos.y);
 			if(result == TouchType.RIGHT)
 			{
-				score += timeToTouch * 5;
-				timeToTouch = currentDifficulty.time();
+				GameStats.score += GameStats.timeToTouch * 5;
+				GameStats.timeToTouch = GameStats.currentDifficulty.time();
 			}
 			else if(result == TouchType.WRONG)
 			{
-				lives -= 1;
+				GameStats.lives -= 1;
 			}
 		}
 		
 		gameOverChecks();
 		
 		game.batch.begin();
+		game.batch.setColor(Color.WHITE);
+		game.batch.draw(lowerPanelTex, 0, Gdx.graphics.getWidth());
 		tiles.render();
-		font.draw(game.batch, "Score: " + score + "     Lives: " + lives + "     Time: " + String.format("%.02f", timeToTouch), 0, Gdx.graphics.getHeight() - font.getLineHeight());
+		font.draw(game.batch, "Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch), 0, Gdx.graphics.getHeight() - font.getLineHeight());
 		game.batch.end();
 	}
 
 	private void gameOverChecks() {
-		if(lives <= 0 || timeToTouch <= 0.0f)
+		if(GameStats.lives <= 0 || GameStats.timeToTouch <= 0.0f)
 		{
 			dispose();
 			game.setScreen(new GameOverScreen(game));
