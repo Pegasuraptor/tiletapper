@@ -31,15 +31,12 @@ public class GameScreen implements Screen {
 		camera.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		
 		font = new BitmapFont(true);
-		font.setColor(Color.WHITE);
-		//font.setScale(Gdx.graphics.getDensity());
+		font.setColor(Color.BLACK);
+		font.setScale(Gdx.graphics.getDensity());
 		
 		lowerPanelTex = new TextureRegion(new Texture("lowerpanel.png"));
 		lowerPanelTex.flip(false, true);
-		
-		GameStats.lives = 3;
-		GameStats.score = 0;
-		GameStats.currentDifficulty = Difficulty.EASY;
+
 		GameStats.timeToTouch = GameStats.currentDifficulty.time();
 		tiles = new TileGroup(game, GameStats.currentDifficulty.tiles());
 	}
@@ -85,9 +82,9 @@ public class GameScreen implements Screen {
 		
 		game.batch.begin();
 		game.batch.setColor(Color.WHITE);
-		game.batch.draw(lowerPanelTex, 0, Gdx.graphics.getWidth());
+		game.batch.draw(lowerPanelTex, 0, Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.4f);
 		tiles.render();
-		font.draw(game.batch, "Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch), 0, Gdx.graphics.getHeight() - font.getLineHeight());
+		font.draw(game.batch, "Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch), (Gdx.graphics.getWidth() - font.getBounds("Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch)).width) * 0.5f, Gdx.graphics.getHeight() - (font.getLineHeight() * 2.5f));
 		game.batch.end();
 	}
 
