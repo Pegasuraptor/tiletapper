@@ -19,6 +19,7 @@ public class GameScreen implements Screen {
 	final TileTapper game;
 	private OrthographicCamera camera;
 	private TileGroup tiles;
+	private float startCountdown;
 	
 	private BitmapFont font;
 	private TextureRegion lowerPanelTex;
@@ -36,27 +37,29 @@ public class GameScreen implements Screen {
 				
 		lowerPanelTex = new TextureRegion(new Texture("lowerpanel.png"));
 		lowerPanelTex.flip(false, true);
+		
+		startCountdown = 3.0f;
 
-		GameStats.timeToTouch = 10f; //GameStats.currentDifficulty.time();
+		GameStats.timeToTouch = GameStats.currentDifficulty.time();
 		tiles = new TileGroup(game, GameStats.currentDifficulty.tiles());
 	}
 
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		gameState = GameState.RUNNING;
+		gameState = GameState.STARTING;
 	}
 
 	@Override
 	public void render(float delta) {
+		Gdx.gl.glClearColor(0, 0.5f, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		camera.update();
+		game.batch.setProjectionMatrix(camera.combined);
+		
 		if(gameState == GameState.RUNNING)
-		{
-			Gdx.gl.glClearColor(0, 0.5f, 1, 1);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-			
-			camera.update();
-			game.batch.setProjectionMatrix(camera.combined);
-			
+		{			
 			GameStats.timeToTouch -= delta;
 			
 			//Stops little graphical glitch where time is a - number.
@@ -88,12 +91,12 @@ public class GameScreen implements Screen {
 			game.batch.setColor(Color.WHITE);
 			game.batch.draw(lowerPanelTex, 0, Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.4f);
 			tiles.render(gameState);
-			font.draw(game.batch, "Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch), (Gdx.graphics.getWidth() - font.getBounds("Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch)).width) * 0.5f, Gdx.graphics.getHeight() - (font.getLineHeight() * 2.5f));
+			font.draw(game.batch, "Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch), (Gdx.graphics.getWidth() - font.getBounds("Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch)).width) * 0.5f, Gdx.graphics.getHeight() - (font.getLineHeight() * 2f));
 			game.batch.end();
 			
 			gameOverChecks();
 		}
-		else
+		else if(gameState == GameState.PAUSED)
 		{
 			if(Gdx.input.justTouched())
 			{
@@ -104,7 +107,6 @@ public class GameScreen implements Screen {
 				if(result == TouchType.PAUSE)
 				{
 					gameState = GameState.RUNNING;
-					return;
 				}
 			}
 			
@@ -112,7 +114,24 @@ public class GameScreen implements Screen {
 			game.batch.setColor(Color.GRAY);
 			game.batch.draw(lowerPanelTex, 0, Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.4f);
 			tiles.render(gameState);
-			font.draw(game.batch, "Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch), (Gdx.graphics.getWidth() - font.getBounds("Score: " + GameStats.score + "     Lives: " + GameStats.lives + "     Time: " + String.format("%.02f", GameStats.timeToTouch)).width) * 0.5f, Gdx.graphics.getHeight() - (font.getLineHeight() * 2.5f));
+			font.draw(game.batch, "Paused", (Gdx.graphics.getWidth() - font.getBounds("Paused").width) * 0.5f, Gdx.graphics.getHeight() - (font.getLineHeight() * 2f));
+			game.batch.end();
+		}
+		else if(gameState == GameState.STARTING)
+		{
+			startCountdown -= delta;
+			
+			if(startCountdown <= 0.0f)
+			{
+				gameState = GameState.RUNNING;
+				startCountdown = 0.0f;
+			}
+			
+			game.batch.begin();
+			game.batch.setColor(Color.GRAY);
+			game.batch.draw(lowerPanelTex, 0, Gdx.graphics.getWidth(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight() * 0.4f);
+			tiles.render(gameState);
+			font.draw(game.batch, "Game Starting In: " + String.format("%.02f", startCountdown), (Gdx.graphics.getWidth() - font.getBounds("Game Starting In: " + String.format("%.02f", startCountdown)).width) * 0.5f, Gdx.graphics.getHeight() - (font.getLineHeight() * 2f));
 			game.batch.end();
 		}
 	}

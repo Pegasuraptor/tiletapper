@@ -6,7 +6,7 @@ public class Enums {
 	}
 	
 	public enum GameState {
-		RUNNING, PAUSED
+		RUNNING, PAUSED, STARTING
 	}
 	
 	public enum Difficulty {
