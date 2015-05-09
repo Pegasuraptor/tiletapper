@@ -2,15 +2,9 @@ package com.mygdx.game.tiletapper.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,18 +12,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.mygdx.game.tiletapper.TileTapper;
 import com.mygdx.game.tiletapper.misc.Enums.Difficulty;
 import com.mygdx.game.tiletapper.misc.GameStats;
-import com.sun.prism.image.ViewPort;
 
 public class MenuScreen implements Screen {
 	final TileTapper game;
 	private Stage stage;
 	private Table table;
 	private ShapeRenderer shapeRenderer;
+	private Texture logo;
 		
 	public MenuScreen(final TileTapper g)
 	{
@@ -44,30 +36,22 @@ public class MenuScreen implements Screen {
 
 	    shapeRenderer = new ShapeRenderer();
 	    
-	    final TextureRegion region = new TextureRegion(new Texture("tiletapper.png"));
-	    final Actor actor = new Actor() {
-	    	public void draw(Batch batch, float parentAlpha) {
-	    		Color color = getColor();
-				batch.setColor(color.r, color.g, color.b, parentAlpha);
-				batch.draw(region, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(),
-					getRotation());
-	    	}
-	    };
-	    actor.setOrigin(0, 0);
-	    actor.setBounds((stage.getWidth() - region.getTexture().getWidth()) * 0.5f, stage.getHeight() - 50 - region.getTexture().getHeight(), region.getTexture().getWidth(), region.getTexture().getHeight());
-	    stage.addActor(actor);
+	    logo = new Texture("tiletapper.png");
 	    
 	    Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+	    
+	    //Originally had this inside the button listeners but it's the same every time.
+		GameStats.lives = 3;
+		GameStats.score = 0;
 
 	    VerticalGroup menu = new VerticalGroup().space(15).pad(5).fill();
 	    TextButton button = new TextButton("Easy", skin);
 	    button.addListener(new InputListener() {
 	    	public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 	    		GameStats.currentDifficulty = Difficulty.EASY;
-	    		GameStats.lives = 3;
-	    		GameStats.score = 0;
+	    		dispose();
 	    		g.setScreen(new GameScreen(g));
-				return true;
+	    		return true;
 	    	}
 	    });
 	    menu.addActor(button);
@@ -75,10 +59,9 @@ public class MenuScreen implements Screen {
 	    button.addListener(new InputListener() {
 	    	public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 	    		GameStats.currentDifficulty = Difficulty.NORMAL;
-	    		GameStats.lives = 3;
-	    		GameStats.score = 0;
+	    		dispose();
 	    		g.setScreen(new GameScreen(g));
-				return true;
+	    		return true;
 	    	}
 	    });
 	    menu.addActor(button);
@@ -86,16 +69,17 @@ public class MenuScreen implements Screen {
 	    button.addListener(new InputListener() {
 	    	public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 	    		GameStats.currentDifficulty = Difficulty.HARD;
-	    		GameStats.lives = 3;
-	    		GameStats.score = 0;
+	    		dispose();
 	    		g.setScreen(new GameScreen(g));
 				return true;
 	    	}
 	    });
 	    menu.addActor(button);
-	    menu.setFillParent(true);
 	    table.addActor(menu);
+	    table.pack();
 	    menu.setPosition((table.getWidth() - menu.getWidth()) * 0.5f, (table.getHeight() * 0.5f));
+	    menu.setScaleX(table.getWidth() / 480f);
+	    menu.setScaleY(table.getHeight() / 800f);
 	}
 	
 	@Override
@@ -114,6 +98,14 @@ public class MenuScreen implements Screen {
 	    stage.getBatch().begin();
 	    table.draw(stage.getBatch(), 0);
 	    stage.getBatch().end();
+	    
+	    //Reset the menu camera as it has changed after a Game Screen has been made.
+	    game.batch.setProjectionMatrix(stage.getCamera().combined);
+	    game.batch.begin();
+	    //Happy Accident: The logo will retain the tint colour of the previous in-game tile if this menu is 
+	    //created from a game over screen. Decided this a feature, not a bug.
+	    game.batch.draw(logo, (Gdx.graphics.getWidth() - (Gdx.graphics.getWidth() * 0.53f)) * 0.5f, Gdx.graphics.getHeight() - (Gdx.graphics.getHeight() * 0.34f), Gdx.graphics.getWidth() * 0.53f, Gdx.graphics.getHeight() * 0.32f);
+	    game.batch.end();
 	}
 
 	@Override
@@ -136,13 +128,29 @@ public class MenuScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		stage.dispose();
-		shapeRenderer.dispose();
+		Gdx.input.setInputProcessor(null);
+		
+		if(stage != null)
+		{
+			stage.dispose();
+			stage = null;
+		}
+		
+		if(logo != null)
+		{
+			logo.dispose();
+			logo = null;
+		}
+		
+		if(shapeRenderer != null)
+		{
+			shapeRenderer.dispose();
+			shapeRenderer = null;
+		}
 	}
 }

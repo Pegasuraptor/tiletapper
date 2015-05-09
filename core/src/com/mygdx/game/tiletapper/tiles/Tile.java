@@ -79,4 +79,17 @@ public class Tile {
 	public void setColour(Color colour) {
 		this.colour = colour;
 	}
+	
+	public void dispose() {
+		if(square != null)
+		{
+			square.dispose();
+			square = null;
+		}
+		
+		if(colour != null)
+		{
+			colour = null;
+		}
+	}
 }

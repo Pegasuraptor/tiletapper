@@ -6,14 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.Timer;
 import com.mygdx.game.tiletapper.TileTapper;
-import com.mygdx.game.tiletapper.misc.Enums.Difficulty;
-import com.mygdx.game.tiletapper.misc.Enums.TouchType;
-import com.mygdx.game.tiletapper.tiles.TileGroup;
 
 public class GameOverScreen implements Screen {
 	final TileTapper game;
@@ -52,7 +45,7 @@ public class GameOverScreen implements Screen {
 		
 		if(Gdx.input.justTouched())
 		{
-			game.setScreen(new GameScreen(game));
+			game.setScreen(new MenuScreen(game));
 		}
 	}
 

@@ -2,7 +2,11 @@ package com.mygdx.game.tiletapper.misc;
 
 public class Enums {
 	public enum TouchType {
-		RIGHT, WRONG, OOB
+		RIGHT, WRONG, OOB, PAUSE
+	}
+	
+	public enum GameState {
+		RUNNING, PAUSED
 	}
 	
 	public enum Difficulty {

@@ -32,4 +32,19 @@ public class Colours {
 			gameColours.add(allColours.get(i));
 		}
 	}
+	
+	public void dispose()
+	{
+		if(allColours != null)
+		{
+			allColours.clear();
+			allColours = null;
+		}
+		
+		if(gameColours != null)
+		{
+			gameColours.clear();
+			gameColours = null;
+		}
+	}
 }
